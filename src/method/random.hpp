@@ -1,6 +1,6 @@
 #pragma once
 
-#include "greedy.hpp"
+#include "model.hpp"
 
 #define RANDOMPHASELEN 11000
 

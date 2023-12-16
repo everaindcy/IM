@@ -1,5 +1,6 @@
 #include "OCIMTS.hpp"
 #include "random.hpp"
+#include "twophasegreedy.hpp"
 
 // runner graphfile seed k N
 int main(int argc, char *argv[]) {
@@ -11,7 +12,7 @@ int main(int argc, char *argv[]) {
     auto graphfile = "../graph/graphtest.graph";
     auto seed = 0;
     auto k = 3;
-    auto N = 1;
+    auto N = 20;
 
     auto g = Graph(graphfile, ICrenew1, ICrenew2);
     auto seeds = std::vector<int>({seed});
@@ -48,7 +49,19 @@ int main(int argc, char *argv[]) {
     double perform = 0;
     for (int i = 0; i < N; i++){
         auto ghat = Graph(graphfile, ICrenew1, ICrenew2);
-        OCIMTS(&ghat, &g, seeds, k);
+        // OCIMTS(&ghat, &g, seeds, k);
+        TwoPhaseGreedy(&ghat, &g, seeds, k);
+        ghat.genP();
+
+        for (auto &e : ghat.edges) {
+            std::cout << double(e.alpha)/(e.alpha+e.beta) << ", ";
+        }
+        std::cout << std::endl;
+        for (auto &e : ghat.edges) {
+            std::cout << e.p << ", ";
+        }
+        std::cout << std::endl;
+
         auto Sp = Greedy(&ghat, k, seeds);
         auto ans = TestGraph(1000, &g, Sp, seeds);
         perform += ans;

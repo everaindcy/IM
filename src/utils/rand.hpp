@@ -17,6 +17,9 @@ double randreal() {
 }
 
 double randbeta(double alpha, double beta) {
+    if (alpha <= 0) return 0;
+    if (beta <= 0) return 1;
+
     std::gamma_distribution<double> gamma1(alpha, 1), gamma2(beta, 1);
     double a = gamma1(gen), b = gamma2(gen);
     return a/(a+b);

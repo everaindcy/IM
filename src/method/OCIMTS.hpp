@@ -2,7 +2,7 @@
 
 #include "model.hpp"
 
-#define PHASELEN 1100
+#define PHASELEN 300
 
 void OCIMTS(Graph* ghat, Graph* g, std::vector<int> seeds, int k) {
     for (int phase = 0; phase < PHASELEN; phase++) {
@@ -12,9 +12,9 @@ void OCIMTS(Graph* ghat, Graph* g, std::vector<int> seeds, int k) {
         g->test(Sp, seeds);
         updateABp(ghat, g);
 
-        for (auto &e : ghat->edges) {
-            std::cout << double(e.alpha)/(e.alpha+e.beta) << ", ";
-        }
-        std::cout << std::endl;
+        // for (auto &e : ghat->edges) {
+        //     std::cout << double(e.alpha)/(e.alpha+e.beta) << ", ";
+        // }
+        // std::cout << std::endl;
     }
 }

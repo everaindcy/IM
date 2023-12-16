@@ -34,7 +34,7 @@ bool ICrenew2(Graph *g, Node *n) {
     } else {
         n->round = g->round + 1;
         double p = double(pos) / (double(pos) + double(neg));
-        if (rdm::randreal() <= p) n->state = 1;
+        if (rdm::randreal() < p) n->state = 1;
         else n->state = -1;
     }
     return true;
