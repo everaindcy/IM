@@ -1,18 +1,18 @@
 #pragma once
 
 #include <algorithm>
+#include "OCIMTS.hpp"
 #include "model.hpp"
 
-#define PHASE1LEN 200
-#define PHASE2LEN 100
-
-bool TwoPhaseGreedyPhase1(Graph* ghat, Graph* g, std::vector<int> seeds, int k) {
+double TwoPhaseGreedyPhase1(Graph* ghat, Graph* g, std::vector<int> seeds, int k, int plen) {
     auto seed = &g->nodes[seeds[0]];
     auto seedout = seed->neighborOut();
-    if (seedout.size() >= k) return false;
+    if (seedout.size() >= k) return -1;
     auto k1 = k - seedout.size();
 
-    for (int phase = 0; phase < PHASE1LEN; phase++) {
+    double ans = 0;
+
+    for (int phase = 0; phase < plen; phase++) {
         auto Sp = std::vector<int>(0);
 
         auto order = std::vector<int>(ghat->edges.size());
@@ -46,6 +46,7 @@ bool TwoPhaseGreedyPhase1(Graph* ghat, Graph* g, std::vector<int> seeds, int k) 
         }
 
         g->test(Sp, seeds);
+        ans += g->nodeNum(1);
         updateABp(ghat, g);
 
         // for (auto &e : ghat->edges) {
@@ -53,15 +54,17 @@ bool TwoPhaseGreedyPhase1(Graph* ghat, Graph* g, std::vector<int> seeds, int k) 
         // }
         // std::cout << std::endl;
     }
-    return true;
+    return ans;
 }
 
-bool TwoPhaseGreedyPhase2(Graph *ghat, Graph* g, std::vector<int> seeds, int k) {
+double TwoPhaseGreedyPhase2(Graph *ghat, Graph* g, std::vector<int> seeds, int k, int plen) {
     auto seed = &g->nodes[seeds[0]];
     auto seedout = seed->neighborOut();
-    if (seedout.size() >= k) return false;
+    if (seedout.size() >= k) return -1;
 
-    for (int phase = 0; phase < PHASE2LEN; phase++) {
+    double ans = 0;
+
+    for (int phase = 0; phase < plen; phase++) {
         auto Sp = std::vector<int>(0);
         for (auto i : seedout) {
             for (auto e : ghat->nodes[i].in) {
@@ -113,6 +116,7 @@ bool TwoPhaseGreedyPhase2(Graph *ghat, Graph* g, std::vector<int> seeds, int k) 
         }
 
         g->test(Sp, seeds);
+        ans += g->nodeNum(1);
         updateABp(ghat, g);
 
         for (auto &e : seed->out) {
@@ -139,12 +143,17 @@ bool TwoPhaseGreedyPhase2(Graph *ghat, Graph* g, std::vector<int> seeds, int k) 
         // }
         // std::cout << std::endl;
     }
-    return true;
+    return ans;
 }
 
-bool TwoPhaseGreedy(Graph *ghat, Graph* g, std::vector<int> seeds, int k) {
-    bool ok = TwoPhaseGreedyPhase1(ghat, g, seeds, k);
-    if (!ok) return false;
-    ok = TwoPhaseGreedyPhase2(ghat, g, seeds, k);
-    return ok;
+double TwoPhaseGreedy(Graph *ghat, Graph* g, std::vector<int> seeds, int k, int p1len, int p2len, int T) {
+    auto ans1 = TwoPhaseGreedyPhase1(ghat, g, seeds, k, p1len);
+    if (ans1 < 0) return -1;
+    auto ans2 = TwoPhaseGreedyPhase2(ghat, g, seeds, k, p2len);
+    if (ans2 < 0) return -1;
+    ghat->genP();
+    auto Sp = Greedy(ghat, k, seeds);
+    auto ans3 = TestGraph(T - p1len - p2len, g, Sp, seeds)*(T - p1len - p2len);
+    // auto ans3 = OCIMTS(ghat, g, seeds, k, T-p1len-p2len);
+    return ans1 + ans2 + ans3;
 }

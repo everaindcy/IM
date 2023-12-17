@@ -2,14 +2,14 @@
 
 #include "model.hpp"
 
-#define PHASELEN 300
-
-void OCIMTS(Graph* ghat, Graph* g, std::vector<int> seeds, int k) {
-    for (int phase = 0; phase < PHASELEN; phase++) {
+double OCIMTS(Graph* ghat, Graph* g, std::vector<int> seeds, int k, int T) {
+    double ans = 0;
+    for (int phase = 0; phase < T; phase++) {
         ghat->genP();
         auto Sp = Greedy(ghat, k, seeds);
 
         g->test(Sp, seeds);
+        ans += g->nodeNum(1);
         updateABp(ghat, g);
 
         // for (auto &e : ghat->edges) {
@@ -17,4 +17,5 @@ void OCIMTS(Graph* ghat, Graph* g, std::vector<int> seeds, int k) {
         // }
         // std::cout << std::endl;
     }
+    return ans;
 }
